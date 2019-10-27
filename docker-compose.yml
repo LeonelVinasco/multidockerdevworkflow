@@ -5,12 +5,12 @@ services:
   redis:
     image: 'redis:latest'
   nginx:
-    restart:always
+    restart: always
     build:
       dockerfile: Dockerfile.dev
       context: ./nginx
     ports:
-      - '3050:80'
+      - '3000:80'
   api:
     build:
       dockerfile: Dockerfile.dev
@@ -19,7 +19,7 @@ services:
       - /app/node_modules
       - ./server:/app
     environment:
-      - REDIS_HOST= redis
+      - REDIS_HOST=redis
       - REDIS_PORT=6379
       - PGUSER=postgres
       - PGHOST=postgres

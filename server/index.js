@@ -36,9 +36,6 @@ const redisClient = redis.createClient({
 //solo hace una operación a la vez
 const redisPublisher = redisClient.duplicate();
 
-app.get('/', (req,res)=>{
-    res.send("<h1>Título de amor</h1>")
-})
 
 app.get('/values/all', async (req, res)=>{
     const values = await pgClient.query('SELECT * FROM values')
@@ -48,11 +45,14 @@ app.get('/values/all', async (req, res)=>{
 
 //Redis dont have Promises support, thats why we
 //use a normal callback in the next get func
-app.get('/values/current'), async (req, res) => {
+app.get('/values/current', async (req, res) => {
+    
     redisClient.hgetall('values', (err, values)=>{
-        res.send(values)
+        console.log("Obteniendo valores de redis", values)
+        res.send(values);
+        
     })
-}
+})
 
 //Cuando el usuario ingresa el número desde la
 //interfaz de React y se hace el Post
@@ -60,10 +60,11 @@ app.post('/values', async (req,res)=>{
     const index = req.body.index
 
     if (parseInt(index) > 40) {
-        return res.status(422).send('Index too high')
+        return res.status(422).send('Index too high');
     }
-    redisClient.hset('values', index, 'Nothing yet!')
-    redisPublisher.publish('insert', index)
+    redisClient.hset('values', index, 'Nothing yet!');
+    redisPublisher.publish('insert', index);
+    console.log("Insertando en redis", index)
     pgClient.query('INSERT INTO values(number) VALUES($1)', [index])
 
     res.send({working:true})
