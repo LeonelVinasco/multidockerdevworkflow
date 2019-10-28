@@ -5,8 +5,8 @@ services:
 before_install:
   - docker build -t lavinascoz/react-test -f ./client/Dockerfile.dev ./client
 
-  script:
-    - docker run -e CI=true lavinascoz/react-test npm test -- --coverage
+script:
+  - docker run -e CI=true lavinascoz/react-test npm test -- --coverage
 
 after_success:
   - docker build -t lavinascoz/multi-client ./client
